@@ -11,9 +11,7 @@ export default function Home() {
 
   let socket: Socket;
   
-  if (process.env.SOCKET_URL) {
-    socket = io(process.env.SOCKET_URL);
-  }
+    socket = io(process.env.SOCKET_URL ? process.env.SOCKET_URL : "https://socket-lol-draft-80eda8c26e85.herokuapp.com/");
 
   const handleJoin = () => {
     if (userName !== "" && roomId !== "") {
