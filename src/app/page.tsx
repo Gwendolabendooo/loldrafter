@@ -10,7 +10,7 @@ export default function Home() {
   const [roomId, setroomId] = useState("");
 
   var socket: any;
-  socket = io("https://socket-lol-draft-80eda8c26e85.herokuapp.com");
+  socket = io(process.env.SOCKET_URL);
 
   const handleJoin = () => {
     if (userName !== "" && roomId !== "") {
@@ -21,7 +21,7 @@ export default function Home() {
       setTimeout(() => {
         setShowChat(true);
         setShowSpinner(false);
-      }, 200);
+      }, 4000);
     } else {
       alert("Please fill in Username and Room Id");
     }
