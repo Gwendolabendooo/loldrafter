@@ -1,5 +1,5 @@
 "use client";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import { useState } from "react";
 import ChatPage from "@/app/components/page";
 
@@ -9,8 +9,11 @@ export default function Home() {
   const [showSpinner, setShowSpinner] = useState(false);
   const [roomId, setroomId] = useState("");
 
-  var socket: any;
-  socket = io(process.env.SOCKET_URL);
+  let socket: Socket;
+  
+  if (process.env.SOCKET_URL) {
+    socket = io(process.env.SOCKET_URL);
+  }
 
   const handleJoin = () => {
     if (userName !== "" && roomId !== "") {
