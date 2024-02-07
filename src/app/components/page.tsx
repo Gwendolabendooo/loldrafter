@@ -1,22 +1,24 @@
 "use client"
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import {SocketContext, socket} from '@/app/socketProvider';
 
 interface IMsgDataTypes {
-  roomId: String | number;
+  roomId: String | null;
   user: String;
   msg: String;
   time: String;
 }
 
-const ChatPage = ({ socket, username, roomId }: any) => {
+const ChatPage = ({ username }: any) => {
   const [currentMsg, setCurrentMsg] = useState("");
   const [chat, setChat] = useState<IMsgDataTypes[]>([]);
+  const { roomId } = useContext(SocketContext);
 
   const sendData = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (currentMsg !== "") {
       const msgData: IMsgDataTypes = {
-        roomId,
+        roomId: roomId,
         user: username,
         msg: currentMsg,
         time:
@@ -32,6 +34,7 @@ const ChatPage = ({ socket, username, roomId }: any) => {
 
   useEffect(() => {
     socket.on("receive_msg", (data: IMsgDataTypes) => {
+      console.log(data, 'fesxsxssxfe')
       setChat((pre) => [...pre, data]);
     });
   }, [socket]);
@@ -42,7 +45,7 @@ const ChatPage = ({ socket, username, roomId }: any) => {
       <div>
         <div style={{ marginBottom: "1rem" }}>
           <p>
-            Name: <b>{username}</b> and Room Id: <b>{roomId}</b>
+            Name: <b>{username}</b> and Room Id: resrserse <b>{roomId}</b>
           </p>
         </div>
         <div>

@@ -1,28 +1,25 @@
 "use client";
-import { io, Socket } from "socket.io-client";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import ChatPage from "@/app/components/page";
+import {SocketContext, socket} from '@/app/socketProvider';
 
 export default function Home() {
   const [showChat, setShowChat] = useState(false);
   const [userName, setUserName] = useState("");
   const [showSpinner, setShowSpinner] = useState(false);
-  const [roomId, setroomId] = useState("");
+  const [roomIdloc, setroomIdloc] = useState("");
 
-  let socket: Socket;
-  
-    socket = io(process.env.SOCKET_URL ? process.env.SOCKET_URL : "https://socket-lol-draft-80eda8c26e85.herokuapp.com/");
+  const { roomId, setRoomId } = useContext(SocketContext);
 
   const handleJoin = () => {
-    if (userName !== "" && roomId !== "") {
-      console.log(userName, "userName", roomId, "roomId");
-      socket.emit("join_room", roomId);
+    if (userName !== "" && roomIdloc !== "") {
+      socket.emit("join_room", roomIdloc);
       setShowSpinner(true);
 // You can remove this setTimeout and add your own logic
       setTimeout(() => {
         setShowChat(true);
-        setShowSpinner(false);
-      }, 4000);
+        setRoomId(roomIdloc)
+      }, 500);
     } else {
       alert("Please fill in Username and Room Id");
     }
@@ -42,7 +39,7 @@ export default function Home() {
         <input
           type="text"
           placeholder="room id"
-          onChange={(e) => setroomId(e.target.value)}
+          onChange={(e) => setroomIdloc(e.target.value)}
           disabled={showSpinner}
         />
         <button onClick={() => handleJoin()}>
@@ -54,7 +51,7 @@ export default function Home() {
         </button>
       </div>
       <div style={{ display: !showChat ? "none" : "" }}>
-        <ChatPage socket={socket} roomId={roomId} username={userName} />
+        {socket && roomId && <ChatPage socket={socket} roomId={roomId} username={userName} />}
       </div>
     </div>
   );
