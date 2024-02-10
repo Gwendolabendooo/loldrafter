@@ -1,58 +1,86 @@
 "use client";
-import { useState, useContext } from "react";
-import ChatPage from "@/app/components/page";
-import {SocketContext, socket} from '@/app/socketProvider';
+
+import { useState, useEffect, useContext } from "react";
+import { useRouter } from 'next/navigation';
+import { useForm } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from "zod";
+import { socket, SocketContext } from '@/app/socketProvider';
+
+// Schéma Zod pour valider les noms des équipes
+const TeamSchema = z.object({
+  redTeam: z.object({
+    name: z.string().nonempty()
+  }),
+  blueTeam: z.object({
+    name: z.string().nonempty()
+  }),
+});
 
 export default function Home() {
-  const [showChat, setShowChat] = useState(false);
-  const [userName, setUserName] = useState("");
+  const router = useRouter();
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(TeamSchema)
+  });
+
+  const { setlobbyInfos } = useContext(SocketContext);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [roomIdloc, setroomIdloc] = useState("");
 
-  const { roomId, setRoomId } = useContext(SocketContext);
+  const generateRoomId = () => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    const charactersLength = characters.length;
+    for (let i = 0; i < 10; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  };
 
-  const handleJoin = () => {
-    if (userName !== "" && roomIdloc !== "") {
-      socket.emit("join_room", roomIdloc);
+  useEffect(() => {
+    socket.on("room_created", (roomCode: string) => {
+      console.log('newmessagr', roomCode)
+      router.push('/lobby/' + roomCode)
+    });
+
+    // Clean up listener when component unmounts
+    return () => {
+      socket.off("room_created");
+    };
+  }, []);
+
+  const handleJoin = (dataTeams) => {
+    const randomRoomId = generateRoomId()
+    dataTeams.id = randomRoomId
+    setlobbyInfos(dataTeams)
+    socket.emit("join_room", randomRoomId);
+  };
+
+  const onSubmit = (data) => {
+    if (!showSpinner) {
       setShowSpinner(true);
-// You can remove this setTimeout and add your own logic
-      setTimeout(() => {
-        setShowChat(true);
-        setRoomId(roomIdloc)
-      }, 500);
-    } else {
-      alert("Please fill in Username and Room Id");
+      handleJoin(data)
     }
   };
 
   return (
     <div>
-      <div
-        style={{ display: showChat ? "none" : "" }}
-      >
+      <form onSubmit={handleSubmit(onSubmit)}>
         <input
           type="text"
-          placeholder="Username"
-          onChange={(e) => setUserName(e.target.value)}
-          disabled={showSpinner}
+          placeholder="Red Team Name"
+          {...register("redTeam.name")}
         />
+        {errors.redTeam && <span>{errors.redTeam.message}</span>}
         <input
           type="text"
-          placeholder="room id"
-          onChange={(e) => setroomIdloc(e.target.value)}
-          disabled={showSpinner}
+          placeholder="Blue Team Name"
+          {...register("blueTeam.name")}
         />
-        <button onClick={() => handleJoin()}>
-          {!showSpinner ? (
-            "Join"
-          ) : (
-            <div></div>
-          )}
+        {errors.blueTeam && <span>{errors.blueTeam.message}</span>}
+        <button type="submit" disabled={showSpinner}>
+          {showSpinner ? "Creating Room..." : "Create Room"}
         </button>
-      </div>
-      <div style={{ display: !showChat ? "none" : "" }}>
-        {socket && roomId && <ChatPage socket={socket} roomId={roomId} username={userName} />}
-      </div>
+      </form>
     </div>
   );
 }

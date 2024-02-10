@@ -19,15 +19,22 @@ export const socket = socketio.connect(
 
 export const SocketContext = createContext({
   socket,
-  roomId: null,
-  setRoomId: (idRoom) => {roomId = idRoom}, // une fonction vide par défaut
+  lobbyInfos: null,
+  setlobbyInfos: (idRoom) => {lobbyInfos = idRoom}, // une fonction vide par défaut
 });
 
 export const SocketProvider = ({ children }) => {
-  const [roomId, setRoomId] = useState(null);
+  const [lobbyInfos, setlobbyInfos] = useState({
+    redTeam: {
+      name: 'red'
+    },
+    blueTeam: {
+      name: 'blue'
+    }
+  });
 
   return (
-    <SocketContext.Provider value={{ socket, roomId, setRoomId }}>
+    <SocketContext.Provider value={{ socket, lobbyInfos, setlobbyInfos }}>
       {children}
     </SocketContext.Provider>
   );
