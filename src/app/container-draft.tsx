@@ -5,7 +5,7 @@ import { socket, SocketContext } from '@/app/socketProvider';
 
 import { useRouter } from 'next/navigation';
 
-export default function containerDraft() {
+export default function ContainerDraft() {
 	const { setlobbyInfos, lobbyInfos } = useContext(SocketContext);
 
     const router = useRouter();
