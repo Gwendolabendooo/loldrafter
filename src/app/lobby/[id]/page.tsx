@@ -12,18 +12,19 @@ export default function Page({ params }: { params: { id: string } }) {
 		}
 	};
 
+	socket.on("needLobbyInfos", (userId) => {
+		socket.emit("sendLobbyInfos", userId, lobbyInfos);
+	});
+
+	socket.on("updateInfos", (data) => {
+		setlobbyInfos(data)
+		console.log(data, 'test')
+	});
+
 	useEffect(() => {
 		if (!lobbyInfos.id) {
 			socket.emit("join_existingLobby", params.id);
 		}
-
-		socket.on("needLobbyInfos", (userId) => {
-			socket.emit("sendLobbyInfos", userId, lobbyInfos);
-		});
-
-		socket.on("updateInfos", (data) => {
-			setlobbyInfos(data)
-		});
 	}, [])
 
 	return (
