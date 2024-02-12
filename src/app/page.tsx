@@ -38,7 +38,6 @@ export default function Home() {
 
   useEffect(() => {
     socket.on("room_created", (roomCode: string) => {
-      console.log('newmessagr', roomCode)
       router.push('/lobby/' + roomCode)
     });
 
@@ -51,6 +50,10 @@ export default function Home() {
   const handleJoin = (dataTeams) => {
     const randomRoomId = generateRoomId()
     dataTeams.id = randomRoomId
+    dataTeams.redTeam.ban = []
+    dataTeams.redTeam.pick = []
+    dataTeams.blueTeam.ban = []
+    dataTeams.blueTeam.pick = []
     setlobbyInfos(dataTeams)
     socket.emit("join_room", randomRoomId);
   };
@@ -65,18 +68,16 @@ export default function Home() {
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
+      <input
+          type="text"
+          placeholder="Blue Team Name"
+          {...register("blueTeam.name")}
+        />
         <input
           type="text"
           placeholder="Red Team Name"
           {...register("redTeam.name")}
         />
-        {errors.redTeam && <span>{errors.redTeam.message}</span>}
-        <input
-          type="text"
-          placeholder="Blue Team Name"
-          {...register("blueTeam.name")}
-        />
-        {errors.blueTeam && <span>{errors.blueTeam.message}</span>}
         <button type="submit" disabled={showSpinner}>
           {showSpinner ? "Creating Room..." : "Create Room"}
         </button>

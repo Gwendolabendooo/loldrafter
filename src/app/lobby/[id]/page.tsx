@@ -18,7 +18,6 @@ export default function Page({ params }: { params: { id: string } }) {
 
 	socket.on("updateInfos", (data) => {
 		setlobbyInfos(data)
-		console.log(data, 'test')
 	});
 
 	useEffect(() => {
@@ -31,12 +30,12 @@ export default function Page({ params }: { params: { id: string } }) {
 		<div className="bg-gradient-to-br from-blue-500 via-purple-500 to-red-500">
 			<div className="flex flex-row items-center justify-between">
 				<div>
-					<h2>{lobbyInfos.redTeam.name}</h2>
-					<button onClick={() => handleJoinTeam("redTeam")}>Join Red Team</button>
-				</div>
-				<div>
 					<h2>{lobbyInfos.blueTeam.name}</h2>
 					<button onClick={() => handleJoinTeam("blueTeam")}>Join Blue Team</button>
+				</div>
+				<div>
+					<h2>{lobbyInfos.redTeam.name}</h2>
+					<button onClick={() => handleJoinTeam("redTeam")}>Join Red Team</button>
 				</div>
 			</div>
 		</div>

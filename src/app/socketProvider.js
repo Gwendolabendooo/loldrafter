@@ -28,10 +28,15 @@ export const SocketContext = createContext({
 export const SocketProvider = ({ children }) => {
   const [lobbyInfos, setlobbyInfos] = useState({
     redTeam: {
-      name: 'red'
+      name: 'red',
+      ban: [],
+      pick: []
     },
+    disabled: [],
     blueTeam: {
-      name: 'blue'
+      name: 'blue',
+      ban: [],
+      pick: []
     }
   });
 

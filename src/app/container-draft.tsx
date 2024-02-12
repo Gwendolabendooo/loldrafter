@@ -12,12 +12,12 @@ export default function ContainerDraft() {
 	socket.on("join_team", (userId, team, lobbyId) => {
 		let newRoom = lobbyInfos
 		newRoom[team].user = userId
-		console.log(newRoom)
 		setlobbyInfos(newRoom)
 		if (socket.id === userId) {
 			router.push('/draft/' + lobbyId)
 		}
 	});
+
 	useEffect(() => {
 
         socket.on("send_existingLobby", (infoLob) => {
