@@ -31,8 +31,8 @@ const Timer: React.FC<TimerProps> = ({ onFinish, newId }) => {
     }, [newId]);
 
     return (
-        <div>
-            <h2>{seconds}</h2>
+        <div className="chrono">
+{seconds}
         </div>
     );
 };

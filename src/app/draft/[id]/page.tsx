@@ -242,9 +242,9 @@ function Page({ params }: { params: { id: string } }) {
         const redpicks = localInfos?.redTeam.pick.map((pick, index) => (
             <div
                 key={index}
-                className="w-[200px] h-[100px] bg-black"
+                className="w-[200px] h-[100px] bg-white bannerChamp"
                 style={{
-                    backgroundImage: `url(${pick.squarePortraitPath})`,
+                    backgroundImage: `url(${pick.bannerUrl})`,
                 }}></div>
         ));
 
@@ -256,7 +256,7 @@ function Page({ params }: { params: { id: string } }) {
                 .map((_, index) => (
                     <div
                         key={index + (localInfos?.redTeam.pick.length ?? 0)}
-                        className="w-[200px] h-[100px] bg-black"></div>
+                        className="w-[200px] h-[100px] bg-white bannerChamp"></div>
                 ));
         }
 
@@ -269,9 +269,9 @@ function Page({ params }: { params: { id: string } }) {
         const bluepicks = localInfos?.blueTeam.pick.map((pick, index) => (
             <div
                 key={index}
-                className="w-[200px] h-[100px] bg-black"
+                className="w-[200px] h-[100px] bg-white bannerChamp"
                 style={{
-                    backgroundImage: `url(${pick.squarePortraitPath})`,
+                    backgroundImage: `url(${pick.bannerUrl})`,
                 }}></div>
         ));
 
@@ -283,7 +283,7 @@ function Page({ params }: { params: { id: string } }) {
                 .map((_, index) => (
                     <div
                         key={index + (localInfos?.blueTeam.pick.length ?? 0)}
-                        className="w-[200px] h-[100px] bg-black"></div>
+                        className="w-[200px] h-[100px] bg-white bannerChamp"></div>
                 ));
         }
 
@@ -296,7 +296,7 @@ function Page({ params }: { params: { id: string } }) {
         const blueBans = localInfos?.blueTeam.ban.map((ban, index) => (
             <div
                 key={index}
-                className="w-[100px] h-[100px] bg-black"
+                className="w-[100px] h-[100px] bg-white"
                 style={{
                     backgroundImage: `url(${ban.squarePortraitPath})`,
                 }}></div>
@@ -309,7 +309,7 @@ function Page({ params }: { params: { id: string } }) {
                 .map((_, index) => (
                     <div
                         key={index + (localInfos?.blueTeam.ban.length ?? 0)}
-                        className="w-[100px] h-[100px] bg-black"></div>
+                        className="w-[100px] h-[100px] bg-white"></div>
                 ));
         }
 
@@ -322,7 +322,7 @@ function Page({ params }: { params: { id: string } }) {
         const redBans = localInfos?.redTeam.ban.map((ban, index) => (
             <div
                 key={index}
-                className="w-[100px] h-[100px] bg-black"
+                className="w-[100px] h-[100px] bg-white"
                 style={{
                     backgroundImage: `url(${ban.squarePortraitPath})`,
                 }}></div>
@@ -335,7 +335,7 @@ function Page({ params }: { params: { id: string } }) {
                 .map((_, index) => (
                     <div
                         key={index + (localInfos?.redTeam.ban.length ?? 0)}
-                        className="w-[100px] h-[100px] bg-black"></div>
+                        className="w-[100px] h-[100px] bg-white"></div>
                 ));
         }
 
@@ -375,19 +375,24 @@ function Page({ params }: { params: { id: string } }) {
     // Utilisez une boucle pour afficher chaque image avec son nom de champion
     return (
         <div style={{ height: '100vh' }}>
-            <div className="h-[17%]">
+            <div className="h-[17%] flex flex-row justify-between items-center">
+                <div>
+                    <h2>{localInfos.blueTeam.name}</h2>
+                </div>
                 {isVisible && (
                     <Timer newId={cpt} onFinish={() => handleFinish()} />
                 )}
+                <div>
+                    <h2>{localInfos.redTeam.name}</h2>
+                </div>
             </div>
             <div className="flex flex-row justify-between h-[65%]">
                 <div className="w-[300px] shrink-0">
-                    <h2>{localInfos.blueTeam.name}</h2>
                     <div className="flex flex-wrap justify-between h-full">
                         {renderBlueTeamPick()}
                     </div>
                 </div>
-                <div className="flex flex-wrap">
+                <div className="flex flex-wrap w-full">
                     <ListChampions
                         onChampionClick={handleChampionClick}
                         infos={localInfos}
@@ -395,20 +400,21 @@ function Page({ params }: { params: { id: string } }) {
                     />
                 </div>
                 <div className="w-[300px] shrink-0 flex flex-wrap justify-end">
-                    <h2>{localInfos.redTeam.name}</h2>
                     <div className="flex flex-wrap h-full justify-end">
                         {renderRedTeamPick()}
                     </div>
                 </div>
             </div>
-            <div className="h-[16%] w-full mt-2 flex flex-row justify-between">
+            <div className="h-[14%] w-full mt-5 flex flex-row justify-between">
                 <div className="bg-blue flex items-center justify-center flex-row gap-5 ctn-ban">
                     {renderBlueTeamBans()}
                 </div>
-                <div
-                    className="pick p-2 rounded cursor-pointer"
-                    onClick={() => needPick && validChoice()}>
-                    click
+                <div className='flex items-center justify-center'>
+                    <div
+                        className="pick p-2 rounded cursor-pointer"
+                        onClick={() => needPick && validChoice()}>
+                        Valider
+                    </div>
                 </div>
                 <div className="bg-blue flex items-center justify-center flex-row gap-5 ctn-ban">
                     {renderRedTeamBans()}

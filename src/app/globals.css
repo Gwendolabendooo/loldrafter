@@ -2,89 +2,104 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+    font-family: 'thunder';
+    src: url('/fonts/Thunder-VF.ttf');
+}
+
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+    :root {
+        --foreground-rgb: 255, 255, 255;
+        --background-start-rgb: 0, 0, 0;
+        --background-end-rgb: 0, 0, 0;
+    }
 }
 
 body {
-  color: rgb(250, 250, 250);
-  background-color: rgb(0 0 0);
-overflow: hidden;
+    color: rgb(250, 250, 250);
+    background-color: rgb(0 0 0);
+    overflow: hidden;
 }
 
-.imageStyling{
-  /* clip-path: polygon(calc(100% - 37.715px) 0,calc(100% - 37.715px) 0,calc(100% - 36.38528px) 0.08828842px,calc(100% - 35.10187px) 0.34649096px,calc(100% - 33.87791px) 0.76461354px,calc(100% - 32.72654px) 1.33266208px,calc(100% - 31.66088px) 2.0406425px,calc(100% - 30.69406px) 2.87856072px,calc(100% - 29.83924px) 3.83642266px,calc(100% - 29.10953px) 4.90423424px,calc(100% - 28.51807px) 6.07200138px,calc(100% - 28.078px) 7.32973px,calc(100% - 0.542px) calc(100% - 13.295px),calc(100% - 0.542px) calc(100% - 13.295px),calc(100% - 0.20444px) calc(100% - 11.39233px),calc(100% - 0.23183px) calc(100% - 9.53124px),calc(100% - 0.59575px) calc(100% - 7.74911px),calc(100% - 1.26778px) calc(100% - 6.08332px),calc(100% - 2.2195px) calc(100% - 4.57125px),calc(100% - 3.4225px) calc(100% - 3.25028px),calc(100% - 4.84837px) calc(100% - 2.15779px),calc(100% - 6.46869px) calc(100% - 1.33116px),calc(100% - 8.25504px) calc(100% - 0.80777px),calc(100% - 10.179px) calc(100% - 0.625px),37.5414px calc(100% - 0.625px),37.5414px calc(100% - 0.625px),36.211833px calc(100% - 0.7133px),34.928532px calc(100% - 0.97154px),33.704637px calc(100% - 1.38972px),32.553288px calc(100% - 1.95783px),31.487625px calc(100% - 2.66588px),30.520788px calc(100% - 3.50385px),29.665917px calc(100% - 4.46175px),28.936152px calc(100% - 5.52958px),28.344633px calc(100% - 6.69733px),27.9045px calc(100% - 7.955px),0.368911px 12.6703px,0.368911px 12.6703px,0.031314929px 10.76748552px,0.058696512px 8.90629376px,0.422629543px 7.12409824px,1.094687816px 5.45827248px,2.046445125px 3.94619px,3.249475264px 2.62522432px,4.675352027px 1.53274896px,6.295649208px 0.70613744px,8.081940601px 0.18276328px,10.0058px 0,calc(100% - 37.715px) 0); */
+.imageStyling {
+    /* clip-path: polygon(calc(100% - 37.715px) 0,calc(100% - 37.715px) 0,calc(100% - 36.38528px) 0.08828842px,calc(100% - 35.10187px) 0.34649096px,calc(100% - 33.87791px) 0.76461354px,calc(100% - 32.72654px) 1.33266208px,calc(100% - 31.66088px) 2.0406425px,calc(100% - 30.69406px) 2.87856072px,calc(100% - 29.83924px) 3.83642266px,calc(100% - 29.10953px) 4.90423424px,calc(100% - 28.51807px) 6.07200138px,calc(100% - 28.078px) 7.32973px,calc(100% - 0.542px) calc(100% - 13.295px),calc(100% - 0.542px) calc(100% - 13.295px),calc(100% - 0.20444px) calc(100% - 11.39233px),calc(100% - 0.23183px) calc(100% - 9.53124px),calc(100% - 0.59575px) calc(100% - 7.74911px),calc(100% - 1.26778px) calc(100% - 6.08332px),calc(100% - 2.2195px) calc(100% - 4.57125px),calc(100% - 3.4225px) calc(100% - 3.25028px),calc(100% - 4.84837px) calc(100% - 2.15779px),calc(100% - 6.46869px) calc(100% - 1.33116px),calc(100% - 8.25504px) calc(100% - 0.80777px),calc(100% - 10.179px) calc(100% - 0.625px),37.5414px calc(100% - 0.625px),37.5414px calc(100% - 0.625px),36.211833px calc(100% - 0.7133px),34.928532px calc(100% - 0.97154px),33.704637px calc(100% - 1.38972px),32.553288px calc(100% - 1.95783px),31.487625px calc(100% - 2.66588px),30.520788px calc(100% - 3.50385px),29.665917px calc(100% - 4.46175px),28.936152px calc(100% - 5.52958px),28.344633px calc(100% - 6.69733px),27.9045px calc(100% - 7.955px),0.368911px 12.6703px,0.368911px 12.6703px,0.031314929px 10.76748552px,0.058696512px 8.90629376px,0.422629543px 7.12409824px,1.094687816px 5.45827248px,2.046445125px 3.94619px,3.249475264px 2.62522432px,4.675352027px 1.53274896px,6.295649208px 0.70613744px,8.081940601px 0.18276328px,10.0058px 0,calc(100% - 37.715px) 0); */
 }
 
 ::-webkit-scrollbar {
-  width: 8px; /* Largeur de la barre de défilement */
+    width: 8px; /* Largeur de la barre de défilement */
 }
 
 /* Style de la poignée (thumb) de la scrollbar */
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2); /* Couleur de la poignée */
-  border-radius: 4px; /* Bord arrondi */
+    background-color: rgba(0, 0, 0, 0.2); /* Couleur de la poignée */
+    border-radius: 4px; /* Bord arrondi */
 }
 
 /* Style du fond de la scrollbar */
 ::-webkit-scrollbar-track {
-  background-color: rgba(0, 0, 0, 0.1); /* Couleur de fond */
+    background-color: rgba(0, 0, 0, 0.1); /* Couleur de fond */
 }
 
 /* Style des coins de la scrollbar */
 ::-webkit-scrollbar-corner {
-  background-color: transparent; /* Couleur transparente */
+    background-color: transparent; /* Couleur transparente */
 }
 
-.nametag{
-  display: block;
-  transform: translate(-50%, -50%);
-  width:max-content;
-  z-index: 100;
-  background-color: rgba(0, 0, 0, 0.807);
+.nametag {
+    display: block;
+    transform: translate(-50%, -50%);
+    width: max-content;
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.807);
 }
 
-input{
-background: black
+.chrono{
+font-family: thunder;
+font-size: 60px;
 }
 
-.pick{
- background: red;
+.bannerChamp{
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 241%;
+    background-position: 52% 28%;
+}
+
+input {
+    background: black;
+}
+
+.pick {
+    background: red;
 }
 
 .roleIcons > img {
-  opacity: .5;
-  cursor: pointer;
-  transition: all .5s;
-
+    opacity: 0.5;
+    cursor: pointer;
+    transition: all 0.5s;
 }
 
-.champCard{
-  transition: all .5s;
-  filter: opacity(1);
+.champCard {
+    transition: all 0.5s;
+    filter: opacity(1);
 }
 
-.ctn-ban > div{
-  clip-path: polygon(0 0,80% 0,100% 100%,20% 100%);
+.ctn-ban > div {
+    clip-path: polygon(0 0, 80% 0, 100% 100%, 20% 100%);
 }
 
 .roleIcons > img:hover {
-  opacity: 1!important;
-  
+    opacity: 1 !important;
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+    .text-balance {
+        text-wrap: balance;
+    }
 }
