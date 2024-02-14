@@ -20,6 +20,10 @@ export default function Page({ params }: { params: { id: string } }) {
 		setlobbyInfos(data)
 	});
 
+    socket.on('updateReady', (data) => {
+		setlobbyInfos(data);
+    });
+
 	useEffect(() => {
 		if (!lobbyInfos.id) {
 			socket.emit("join_existingLobby", params.id);

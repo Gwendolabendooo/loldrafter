@@ -20,16 +20,12 @@ function Page({ params }: { params: { id: string } }) {
 
     const [selectedChamp, setSelectedChamp] = useState(null);
     const [currentPhase, setCurrentPhase] = useState(false);
-    const [cpt, setCpt] = useState(0);
-    const [isVisible, setIsVisible] = useState(true);
+    const [hideActions, setHideActions] = useState(false);
 
-    const [needPick, setNeedPick] = useState(
-        socket.id == localInfos?.redTeam?.user
-            ? false
-            : socket.id == localInfos?.blueTeam?.user
-              ? true
-              : false
-    );
+    const [cpt, setCpt] = useState(0);
+    const [isVisible, setIsVisible] = useState(false);
+
+    const [needPick, setNeedPick] = useState(false);
 
     const isRed = socket.id == localInfos?.redTeam?.user;
     const isBlue = socket.id == localInfos?.blueTeam?.user;
@@ -41,6 +37,17 @@ function Page({ params }: { params: { id: string } }) {
     //   const handleMouseLeave = () => {
     //     setHoveredChampionId(null);
     //   };
+
+    socket.on('updateReady', (data) => {
+        if (data.redTeam.ready && data.blueTeam.ready) {
+            setIsVisible(true);
+            if (isBlue) {
+                setNeedPick(true);
+            }
+        }
+
+        setLocalInfos(data);
+    });
 
     socket.on('updateInfosDraft', (data) => {
         const redTeamBans = data.redTeam.ban.map((champ) => champ.id);
@@ -63,9 +70,17 @@ function Page({ params }: { params: { id: string } }) {
         setNeedPick(true);
     });
 
+    socket.on('endDraft', () => {
+        setIsVisible(false);
+        setHideActions(true);
+    });
+
+    socket.on('restartChrono', () => {
+        setCpt(cpt + 1);
+    });
+
     const chooseChamp = (champion) => {
         const newInfos = { ...localInfos };
-
         if (currentPhase) {
             if (socket.id == newInfos.redTeam.user) {
                 newInfos.redTeam.pick[currentPick] = champion;
@@ -85,28 +100,36 @@ function Page({ params }: { params: { id: string } }) {
 
     const validChoice = () => {
         const actualValue = localInfos;
-        setCpt(cpt + 1);
         //3 premiers ban
         if (!currentPhase) {
-            if (currentBan === 2) {
-                setCurrentPhase(true);
-            }
-
-            if (currentBan === 4 && !currentPhase) {
+            if (currentBan === 2 || currentBan === 4) {
                 setCurrentPhase(true);
             }
 
             if (isRed) {
                 if (!actualValue.redTeam.ban[currentBan]) {
                     actualValue.redTeam.ban[currentBan] = {
-                        id: -1,
-                        name: 'None',
-                        alias: 'None',
-                        squarePortraitPath: '/out/-1.png',
-                        roles: [],
+                        id: 429,
+                        name: 'Kalista',
+                        squarePortraitPath: '/out/429.png',
+                        roles: ['marksman'],
+                        bannerUrl: '/banners/429/429000.jpg',
                     };
-                    socket.emit('updateInfosDraft', actualValue, params.id);
                 }
+
+                if (currentBan === 2) {
+                    actualValue.next = {
+                        is: 'bluePick',
+                        index: actualValue.blueTeam.pick.length,
+                    };
+                } else {
+                    actualValue.next = {
+                        is: 'blueBan',
+                        index: actualValue.blueTeam.ban.length,
+                    };
+                }
+
+                socket.emit('updateInfosDraft', actualValue, params.id);
                 socket.emit(
                     'changePlayer',
                     params.id,
@@ -115,15 +138,25 @@ function Page({ params }: { params: { id: string } }) {
             } else {
                 if (!actualValue.blueTeam.ban[currentBan]) {
                     actualValue.blueTeam.ban[currentBan] = {
-                        id: -1,
-                        name: 'None',
-                        alias: 'None',
-                        squarePortraitPath: '/out/-1.png',
-                        roles: [],
+                        id: 429,
+                        name: 'Kalista',
+                        squarePortraitPath: '/out/429.png',
+                        roles: ['marksman'],
+                        bannerUrl: '/banners/429/429000.jpg',
                     };
-                    socket.emit('updateInfosDraft', actualValue, params.id);
                 }
-
+                if (currentBan === 4) {
+                    actualValue.next = {
+                        is: 'redPick',
+                        index: actualValue.redTeam.pick.length,
+                    };
+                } else {
+                    actualValue.next = {
+                        is: 'redBan',
+                        index: actualValue.redTeam.ban.length,
+                    };
+                }
+                socket.emit('updateInfosDraft', actualValue, params.id);
                 socket.emit(
                     'changePlayer',
                     params.id,
@@ -135,8 +168,6 @@ function Page({ params }: { params: { id: string } }) {
                 setCurrentBan(currentBan + 1);
             } else if (currentPick < 5 && currentPhase) {
                 setCurrentPick(currentPick + 1);
-            } else {
-                console.log('end');
             }
 
             setNeedPick(false);
@@ -145,17 +176,20 @@ function Page({ params }: { params: { id: string } }) {
         if (isRed && currentPhase) {
             if (!actualValue.redTeam.pick[currentPick]) {
                 actualValue.redTeam.pick[currentPick] = {
-                    id: -1,
-                    name: 'None',
-                    alias: 'None',
-                    squarePortraitPath: '/out/-1.png',
-                    roles: [],
+                    id: 429,
+                    name: 'Kalista',
+                    squarePortraitPath: '/out/429.png',
+                    roles: ['marksman'],
+                    bannerUrl: '/banners/429/429000.jpg',
                 };
-                socket.emit('updateInfosDraft', actualValue, params.id);
             }
 
             if (currentPick <= 1) {
                 setCurrentPick(currentPick + 1);
+                actualValue.next = {
+                    is: 'redPick',
+                    index: actualValue.redTeam.pick.length,
+                };
                 if (currentPick === 1) {
                     setNeedPick(false);
                     socket.emit(
@@ -163,6 +197,10 @@ function Page({ params }: { params: { id: string } }) {
                         params.id,
                         actualValue.blueTeam.user
                     );
+                actualValue.next = {
+                    is: 'bluePick',
+                    index: actualValue.blueTeam.pick.length,
+                };
                 }
             }
 
@@ -174,6 +212,10 @@ function Page({ params }: { params: { id: string } }) {
                     params.id,
                     actualValue.blueTeam.user
                 );
+                actualValue.next = {
+                    is: 'bluePick',
+                    index: actualValue.blueTeam.pick.length,
+                };
             }
 
             if (currentPick === 2) {
@@ -181,24 +223,30 @@ function Page({ params }: { params: { id: string } }) {
                 if (currentPick === 2) {
                     setCurrentPhase(false);
                 }
+                actualValue.next = {
+                    is: 'redBan',
+                    index: actualValue.redTeam.ban.length,
+                };
             }
 
             if (currentPick === 4 && currentPhase) {
                 setCurrentPick(currentPick + 1);
                 setNeedPick(false);
             }
+
+                socket.emit('updateInfosDraft', actualValue, params.id);
+
         }
 
         if (isBlue && currentPhase) {
             if (!actualValue.blueTeam.pick[currentPick]) {
                 actualValue.blueTeam.pick[currentPick] = {
-                    id: -1,
-                    name: 'None',
-                    alias: 'None',
-                    squarePortraitPath: '/out/-1.png',
-                    roles: [],
+                    id: 429,
+                    name: 'Kalista',
+                    squarePortraitPath: '/out/429.png',
+                    roles: ['marksman'],
+                    bannerUrl: '/banners/429/429000.jpg',
                 };
-                socket.emit('updateInfosDraft', actualValue, params.id);
             }
             if (currentPick === 0) {
                 setCurrentPick(currentPick + 1);
@@ -208,6 +256,10 @@ function Page({ params }: { params: { id: string } }) {
                     params.id,
                     actualValue.redTeam.user
                 );
+                actualValue.next = {
+                    is: 'redPick',
+                    index: actualValue.redTeam.pick.length,
+                };
             }
 
             if (currentPick > 2) {
@@ -224,6 +276,10 @@ function Page({ params }: { params: { id: string } }) {
 
             if (currentPick === 1 || currentPick === 2) {
                 setCurrentPick(currentPick + 1);
+                actualValue.next = {
+                    is: 'bluePick',
+                    index: actualValue.blueTeam.pick.length,
+                };
                 if (currentPick === 2) {
                     setNeedPick(false);
                     setCurrentPhase(false);
@@ -232,9 +288,36 @@ function Page({ params }: { params: { id: string } }) {
                         params.id,
                         actualValue.redTeam.user
                     );
+
+                actualValue.next = {
+                    is: 'redPick',
+                    index: actualValue.redTeam.pick.length,
+                };
                 }
             }
+
+if (currentPick === 3) {
+                actualValue.next = {
+                    is: 'bluePick',
+                    index: actualValue.blueTeam.pick.length,
+                };
+}
+
+if (currentPick === 4) {
+    actualValue.next = {
+        is: 'redPick',
+        index: actualValue.redTeam.pick.length,
+    };
+}
+
+                socket.emit('updateInfosDraft', actualValue, params.id);
+
         }
+        if (actualValue.redTeam.pick.length === 5) {
+            socket.emit('endDraft', params.id);
+        }
+
+        socket.emit('restartChrono', params.id);
     };
 
     const renderRedTeamPick = () => {
@@ -256,7 +339,15 @@ function Page({ params }: { params: { id: string } }) {
                 .map((_, index) => (
                     <div
                         key={index + (localInfos?.redTeam.pick.length ?? 0)}
-                        className="w-[200px] h-[100px] bg-white bannerChamp"></div>
+                        className={
+                            index === 0 &&
+                            localInfos.next &&
+                            localInfos.next.is === 'redPick' &&
+                            localInfos.next.index ===
+                                localInfos?.redTeam.pick.length
+                                ? 'nextChamp w-[200px] h-[100px] bg-white bannerChamp'
+                                : 'w-[200px] h-[100px] bg-white bannerChamp'
+                        }></div>
                 ));
         }
 
@@ -283,7 +374,15 @@ function Page({ params }: { params: { id: string } }) {
                 .map((_, index) => (
                     <div
                         key={index + (localInfos?.blueTeam.pick.length ?? 0)}
-                        className="w-[200px] h-[100px] bg-white bannerChamp"></div>
+                        className={
+                            index === 0 &&
+                            localInfos.next &&
+                            localInfos.next.is === 'bluePick' &&
+                            localInfos.next.index ===
+                                localInfos?.blueTeam.pick.length
+                                ? 'nextChamp w-[200px] h-[100px] bg-white bannerChamp'
+                                : 'w-[200px] h-[100px] bg-white bannerChamp'
+                        }></div>
                 ));
         }
 
@@ -309,7 +408,15 @@ function Page({ params }: { params: { id: string } }) {
                 .map((_, index) => (
                     <div
                         key={index + (localInfos?.blueTeam.ban.length ?? 0)}
-                        className="w-[100px] h-[100px] bg-white"></div>
+                        className={
+                            index === 0 &&
+                            localInfos.next &&
+                            localInfos.next.is === 'blueBan' &&
+                            localInfos.next.index ===
+                                localInfos?.blueTeam.ban.length
+                                ? 'nextChamp w-[100px] h-[100px] bg-white'
+                                : 'w-[100px] h-[100px] bg-white'
+                        }></div>
                 ));
         }
 
@@ -318,6 +425,7 @@ function Page({ params }: { params: { id: string } }) {
     };
 
     const renderRedTeamBans = () => {
+        console.log(localInfos);
         // Utilisez Array.map pour générer les éléments div pour chaque ban
         const redBans = localInfos?.redTeam.ban.map((ban, index) => (
             <div
@@ -335,7 +443,15 @@ function Page({ params }: { params: { id: string } }) {
                 .map((_, index) => (
                     <div
                         key={index + (localInfos?.redTeam.ban.length ?? 0)}
-                        className="w-[100px] h-[100px] bg-white"></div>
+                        className={
+                            index === 0 &&
+                            localInfos.next &&
+                            localInfos.next.is === 'redBan' &&
+                            localInfos.next.index ===
+                                localInfos?.redTeam.ban.length
+                                ? 'nextChamp w-[100px] h-[100px] bg-white'
+                                : 'w-[100px] h-[100px] bg-white'
+                        }></div>
                 ));
         }
 
@@ -364,6 +480,16 @@ function Page({ params }: { params: { id: string } }) {
         }
     };
 
+    const isReady = () => {
+        let actualValue = { ...localInfos };
+        if (isRed) {
+            actualValue.redTeam.ready = true;
+        } else {
+            actualValue.blueTeam.ready = true;
+        }
+        socket.emit('updateReady', actualValue, params.id);
+    };
+
     const handleRestart = () => {
         setIsVisible(true);
     };
@@ -379,6 +505,17 @@ function Page({ params }: { params: { id: string } }) {
                 <div>
                     <h2>{localInfos.blueTeam.name}</h2>
                 </div>
+                {(!localInfos.blueTeam.ready || !localInfos.redTeam.ready) && (
+                    <div className="chrono">
+                        {localInfos.redTeam.ready && !localInfos.blueTeam.ready
+                            ? 1
+                            : !localInfos.redTeam.ready &&
+                                localInfos.blueTeam.ready
+                              ? 1
+                              : 0}
+                        /2
+                    </div>
+                )}
                 {isVisible && (
                     <Timer newId={cpt} onFinish={() => handleFinish()} />
                 )}
@@ -409,13 +546,31 @@ function Page({ params }: { params: { id: string } }) {
                 <div className="bg-blue flex items-center justify-center flex-row gap-5 ctn-ban">
                     {renderBlueTeamBans()}
                 </div>
-                <div className='flex items-center justify-center'>
-                    <div
-                        className="pick p-2 rounded cursor-pointer"
-                        onClick={() => needPick && validChoice()}>
-                        Valider
+                {!hideActions && (
+                    <div className="flex items-center justify-center">
+                        {!isVisible && (isRed || isBlue) ? (
+                            <button
+                                onClick={() => isReady()}
+                                className={
+                                    (isRed && !localInfos.redTeam.ready) ||
+                                    (isBlue && !localInfos.blueTeam.ready)
+                                        ? 'glow-on-hover'
+                                        : ''
+                                }
+                                type="button">
+                                Prêt
+                            </button>
+                        ) : (
+                            (isRed || isBlue) && (
+                                <div
+                                    className="pick p-2 rounded cursor-pointer"
+                                    onClick={() => needPick && validChoice()}>
+                                    Valider
+                                </div>
+                            )
+                        )}
                     </div>
-                </div>
+                )}
                 <div className="bg-blue flex items-center justify-center flex-row gap-5 ctn-ban">
                     {renderRedTeamBans()}
                 </div>

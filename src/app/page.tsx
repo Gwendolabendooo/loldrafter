@@ -54,6 +54,10 @@ export default function Home() {
     dataTeams.redTeam.pick = []
     dataTeams.blueTeam.ban = []
     dataTeams.blueTeam.pick = []
+  dataTeams.next = {
+is: 'blueBan',
+index: 0
+}
     setlobbyInfos(dataTeams)
     socket.emit("join_room", randomRoomId);
   };
