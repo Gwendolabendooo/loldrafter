@@ -47,7 +47,7 @@ export default function Home() {
     };
   }, []);
 
-  const handleJoin = (dataTeams) => {
+  const handleJoin = (dataTeams: any) => {
     const randomRoomId = generateRoomId()
     dataTeams.id = randomRoomId
     dataTeams.redTeam.ban = []
@@ -62,7 +62,7 @@ index: 0
     socket.emit("join_room", randomRoomId);
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: any) => {
     if (!showSpinner) {
       setShowSpinner(true);
       handleJoin(data)

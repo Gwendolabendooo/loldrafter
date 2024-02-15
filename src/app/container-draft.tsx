@@ -1,35 +1,40 @@
-"use client"
+'use client';
 
-import { useEffect, useContext } from "react";
+import { useEffect, useContext } from 'react';
 import { socket, SocketContext } from '@/app/socketProvider';
 
 import { useRouter } from 'next/navigation';
 
+enum Team {
+    reedTeam,
+    blueTeam,
+}
+
 export default function ContainerDraft() {
-	const { setlobbyInfos, lobbyInfos } = useContext(SocketContext);
+    const { setlobbyInfos, lobbyInfos } = useContext(SocketContext);
 
     const router = useRouter();
-	socket.on("join_team", (userId, team, lobbyId) => {
-		let newRoom = lobbyInfos
-		newRoom[team].user = userId
-		setlobbyInfos(newRoom)
-		if (socket.id === userId) {
-			router.push('/draft/' + lobbyId)
+
+    socket.on('join_team', (userId: string, team: Team, lobbyId: string) => {
+		let newRoom: typeof lobbyInfos = lobbyInfos;
+		if (newRoom && typeof newRoom[team] !== 'undefined') {
+			(newRoom[team] as any).user = userId as any;
 		}
-	});
+		setlobbyInfos(newRoom);
+		if (socket.id === userId) {
+			router.push('/draft/' + lobbyId);
+		}
+    });
 
-	useEffect(() => {
+    useEffect(() => {
+        socket.on('send_existingLobby', (infoLob: any) => {
+            setlobbyInfos(infoLob);
+        });
 
-        socket.on("send_existingLobby", (infoLob) => {
-			setlobbyInfos(infoLob)
-		});
+        return () => {
+            socket.off('join_team');
+        };
+    }, []);
 
-		return () => {
-			socket.off("join_team");
-		};
-	}, []);
-
-	return (
-		null
-	);
+    return null;
 }

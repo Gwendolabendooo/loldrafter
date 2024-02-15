@@ -27,8 +27,8 @@ function Page({ params }: { params: { id: string } }) {
 
     const [needPick, setNeedPick] = useState(false);
 
-    const isRed = socket.id == localInfos?.redTeam?.user;
-    const isBlue = socket.id == localInfos?.blueTeam?.user;
+    const isRed = socket.id == (localInfos as any)?.redTeam?.user;
+    const isBlue = socket.id == (localInfos as any)?.blueTeam?.user;
 
     //   const handleMouseEnter = (championId: number) => {
     //     setHoveredChampionId(championId);
@@ -38,7 +38,7 @@ function Page({ params }: { params: { id: string } }) {
     //     setHoveredChampionId(null);
     //   };
 
-    socket.on('updateReady', (data) => {
+    socket.on('updateReady', (data: any) => {
         if (data.redTeam.ready && data.blueTeam.ready) {
             setIsVisible(true);
             if (isBlue) {
@@ -49,11 +49,11 @@ function Page({ params }: { params: { id: string } }) {
         setLocalInfos(data);
     });
 
-    socket.on('updateInfosDraft', (data) => {
-        const redTeamBans = data.redTeam.ban.map((champ) => champ.id);
-        const redTeamPicks = data.redTeam.pick.map((champ) => champ.id);
-        const blueTeamBans = data.blueTeam.ban.map((champ) => champ.id);
-        const blueTeamPicks = data.blueTeam.pick.map((champ) => champ.id);
+    socket.on('updateInfosDraft', (data: any) => {
+        const redTeamBans = data.redTeam.ban.map((champ: any) => champ.id);
+        const redTeamPicks = data.redTeam.pick.map((champ: any) => champ.id);
+        const blueTeamBans = data.blueTeam.ban.map((champ: any) => champ.id);
+        const blueTeamPicks = data.blueTeam.pick.map((champ: any) => champ.id);
 
         const allIds = redTeamBans.concat(
             redTeamPicks,
@@ -79,8 +79,8 @@ function Page({ params }: { params: { id: string } }) {
         setCpt(cpt + 1);
     });
 
-    const chooseChamp = (champion) => {
-        const newInfos = { ...localInfos };
+    const chooseChamp = (champion: any) => {
+        const newInfos = { ...(localInfos as any) };
         if (currentPhase) {
             if (socket.id == newInfos.redTeam.user) {
                 newInfos.redTeam.pick[currentPick] = champion;
@@ -107,8 +107,8 @@ function Page({ params }: { params: { id: string } }) {
             }
 
             if (isRed) {
-                if (!actualValue.redTeam.ban[currentBan]) {
-                    actualValue.redTeam.ban[currentBan] = {
+                if (!(actualValue as any).redTeam.ban[currentBan]) {
+                    (actualValue as any).redTeam.ban[currentBan] = {
                         id: 429,
                         name: 'Kalista',
                         squarePortraitPath: '/out/429.png',
@@ -118,26 +118,26 @@ function Page({ params }: { params: { id: string } }) {
                 }
 
                 if (currentBan === 2) {
-                    actualValue.next = {
+                    (actualValue as any).next = {
                         is: 'bluePick',
-                        index: actualValue.blueTeam.pick.length,
+                        index: (actualValue as any).blueTeam.pick.length,
                     };
                 } else {
-                    actualValue.next = {
+                    (actualValue as any).next = {
                         is: 'blueBan',
-                        index: actualValue.blueTeam.ban.length,
+                        index: (actualValue as any).blueTeam.ban.length,
                     };
                 }
 
-                socket.emit('updateInfosDraft', actualValue, params.id);
+                socket.emit('updateInfosDraft', actualValue as any, params.id);
                 socket.emit(
                     'changePlayer',
                     params.id,
-                    actualValue.blueTeam.user
+                    (actualValue as any).blueTeam.user
                 );
             } else {
-                if (!actualValue.blueTeam.ban[currentBan]) {
-                    actualValue.blueTeam.ban[currentBan] = {
+                if (!(actualValue as any).blueTeam.ban[currentBan]) {
+                    (actualValue as any).blueTeam.ban[currentBan] = {
                         id: 429,
                         name: 'Kalista',
                         squarePortraitPath: '/out/429.png',
@@ -146,21 +146,21 @@ function Page({ params }: { params: { id: string } }) {
                     };
                 }
                 if (currentBan === 4) {
-                    actualValue.next = {
+                    (actualValue as any).next = {
                         is: 'redPick',
-                        index: actualValue.redTeam.pick.length,
+                        index: (actualValue as any).redTeam.pick.length,
                     };
                 } else {
-                    actualValue.next = {
+                    (actualValue as any).next = {
                         is: 'redBan',
-                        index: actualValue.redTeam.ban.length,
+                        index: (actualValue as any).redTeam.ban.length,
                     };
                 }
-                socket.emit('updateInfosDraft', actualValue, params.id);
+                socket.emit('updateInfosDraft', actualValue as any, params.id);
                 socket.emit(
                     'changePlayer',
                     params.id,
-                    actualValue.redTeam.user
+                    (actualValue as any).redTeam.user
                 );
             }
 
@@ -174,8 +174,8 @@ function Page({ params }: { params: { id: string } }) {
         }
 
         if (isRed && currentPhase) {
-            if (!actualValue.redTeam.pick[currentPick]) {
-                actualValue.redTeam.pick[currentPick] = {
+            if (!(actualValue as any).redTeam.pick[currentPick]) {
+                (actualValue as any).redTeam.pick[currentPick] = {
                     id: 429,
                     name: 'Kalista',
                     squarePortraitPath: '/out/429.png',
@@ -186,21 +186,21 @@ function Page({ params }: { params: { id: string } }) {
 
             if (currentPick <= 1) {
                 setCurrentPick(currentPick + 1);
-                actualValue.next = {
+                (actualValue as any).next = {
                     is: 'redPick',
-                    index: actualValue.redTeam.pick.length,
+                    index: (actualValue as any).redTeam.pick.length,
                 };
                 if (currentPick === 1) {
                     setNeedPick(false);
                     socket.emit(
                         'changePlayer',
                         params.id,
-                        actualValue.blueTeam.user
+                        (actualValue as any).blueTeam.user
                     );
-                actualValue.next = {
-                    is: 'bluePick',
-                    index: actualValue.blueTeam.pick.length,
-                };
+                    (actualValue as any).next = {
+                        is: 'bluePick',
+                        index: (actualValue as any).blueTeam.pick.length,
+                    };
                 }
             }
 
@@ -210,11 +210,11 @@ function Page({ params }: { params: { id: string } }) {
                 socket.emit(
                     'changePlayer',
                     params.id,
-                    actualValue.blueTeam.user
+                    (actualValue as any).blueTeam.user
                 );
-                actualValue.next = {
+                (actualValue as any).next = {
                     is: 'bluePick',
-                    index: actualValue.blueTeam.pick.length,
+                    index: (actualValue as any)?.blueTeam?.pick.length,
                 };
             }
 
@@ -223,9 +223,9 @@ function Page({ params }: { params: { id: string } }) {
                 if (currentPick === 2) {
                     setCurrentPhase(false);
                 }
-                actualValue.next = {
+                (actualValue as any).next = {
                     is: 'redBan',
-                    index: actualValue.redTeam.ban.length,
+                    index: (actualValue as any as any).redTeam.ban.length,
                 };
             }
 
@@ -234,13 +234,12 @@ function Page({ params }: { params: { id: string } }) {
                 setNeedPick(false);
             }
 
-                socket.emit('updateInfosDraft', actualValue, params.id);
-
+            socket.emit('updateInfosDraft', actualValue as any, params.id);
         }
 
         if (isBlue && currentPhase) {
-            if (!actualValue.blueTeam.pick[currentPick]) {
-                actualValue.blueTeam.pick[currentPick] = {
+            if (!(actualValue as any).blueTeam.pick[currentPick]) {
+                (actualValue as any).blueTeam.pick[currentPick] = {
                     id: 429,
                     name: 'Kalista',
                     squarePortraitPath: '/out/429.png',
@@ -254,11 +253,11 @@ function Page({ params }: { params: { id: string } }) {
                 socket.emit(
                     'changePlayer',
                     params.id,
-                    actualValue.redTeam.user
+                    (actualValue as any).redTeam.user
                 );
-                actualValue.next = {
+                (actualValue as any).next = {
                     is: 'redPick',
-                    index: actualValue.redTeam.pick.length,
+                    index: (actualValue as any).redTeam.pick.length,
                 };
             }
 
@@ -269,16 +268,16 @@ function Page({ params }: { params: { id: string } }) {
                     socket.emit(
                         'changePlayer',
                         params.id,
-                        actualValue.redTeam.user
+                        (actualValue as any).redTeam.user
                     );
                 }
             }
 
             if (currentPick === 1 || currentPick === 2) {
                 setCurrentPick(currentPick + 1);
-                actualValue.next = {
+                (actualValue as any).next = {
                     is: 'bluePick',
-                    index: actualValue.blueTeam.pick.length,
+                    index: (actualValue as any).blueTeam.pick.length,
                 };
                 if (currentPick === 2) {
                     setNeedPick(false);
@@ -286,34 +285,33 @@ function Page({ params }: { params: { id: string } }) {
                     socket.emit(
                         'changePlayer',
                         params.id,
-                        actualValue.redTeam.user
+                        (actualValue as any).redTeam.user
                     );
 
-                actualValue.next = {
-                    is: 'redPick',
-                    index: actualValue.redTeam.pick.length,
-                };
+                    (actualValue as any).next = {
+                        is: 'redPick',
+                        index: (actualValue as any).redTeam.pick.length,
+                    };
                 }
             }
 
-if (currentPick === 3) {
-                actualValue.next = {
+            if (currentPick === 3) {
+                (actualValue as any).next = {
                     is: 'bluePick',
-                    index: actualValue.blueTeam.pick.length,
+                    index: (actualValue as any).blueTeam.pick.length,
                 };
-}
+            }
 
-if (currentPick === 4) {
-    actualValue.next = {
-        is: 'redPick',
-        index: actualValue.redTeam.pick.length,
-    };
-}
+            if (currentPick === 4) {
+                (actualValue as any).next = {
+                    is: 'redPick',
+                    index: (actualValue as any).redTeam.pick.length,
+                };
+            }
 
-                socket.emit('updateInfosDraft', actualValue, params.id);
-
+            socket.emit('updateInfosDraft', actualValue as any, params.id);
         }
-        if (actualValue.redTeam.pick.length === 5) {
+        if ((actualValue as any).redTeam.pick.length === 5) {
             socket.emit('endDraft', params.id);
         }
 
@@ -322,29 +320,31 @@ if (currentPick === 4) {
 
     const renderRedTeamPick = () => {
         // Utilisez Array.map pour générer les éléments div pour chaque pick
-        const redpicks = localInfos?.redTeam.pick.map((pick, index) => (
-            <div
-                key={index}
-                className="w-[200px] h-[100px] bg-white bannerChamp"
-                style={{
-                    backgroundImage: `url(${pick.bannerUrl})`,
-                }}></div>
-        ));
+        const redpicks = (localInfos as any)?.redTeam.pick.map(
+            (pick: any, index: number) => (
+                <div
+                    key={index}
+                    className="w-[200px] h-[100px] bg-white bannerChamp"
+                    style={{
+                        backgroundImage: `url(${pick.bannerUrl})`,
+                    }}></div>
+            )
+        );
 
         // Remplissez le reste des picks avec des éléments vides si nécessaire
         let emptypicks = null;
-        if (localInfos?.redTeam.pick.length < 5) {
-            emptypicks = Array(5 - localInfos?.redTeam.pick.length)
-                .fill()
+        if ((localInfos as any)?.redTeam.pick.length < 5) {
+            emptypicks = Array(5 - (localInfos as any)?.redTeam.pick.length)
+                .fill(null)
                 .map((_, index) => (
                     <div
-                        key={index + (localInfos?.redTeam.pick.length ?? 0)}
+                        key={index + ((localInfos as any)?.redTeam.pick.length ?? 0)}
                         className={
                             index === 0 &&
-                            localInfos.next &&
-                            localInfos.next.is === 'redPick' &&
-                            localInfos.next.index ===
-                                localInfos?.redTeam.pick.length
+                            (localInfos as any).next &&
+                            (localInfos as any).next.is === 'redPick' &&
+                            (localInfos as any).next.index ===
+                                (localInfos as any)?.redTeam.pick.length
                                 ? 'nextChamp w-[200px] h-[100px] bg-white bannerChamp'
                                 : 'w-[200px] h-[100px] bg-white bannerChamp'
                         }></div>
@@ -357,7 +357,7 @@ if (currentPick === 4) {
 
     const renderBlueTeamPick = () => {
         // Utilisez Array.map pour générer les éléments div pour chaque pick
-        const bluepicks = localInfos?.blueTeam.pick.map((pick, index) => (
+        const bluepicks = (localInfos as any)?.blueTeam.pick.map((pick: any, index: number) => (
             <div
                 key={index}
                 className="w-[200px] h-[100px] bg-white bannerChamp"
@@ -368,18 +368,21 @@ if (currentPick === 4) {
 
         // Remplissez le reste des picks avec des éléments vides si nécessaire
         let emptypicks = null;
-        if (localInfos?.blueTeam.pick.length < 5) {
-            emptypicks = Array(5 - localInfos?.blueTeam.pick.length)
-                .fill()
+        if ((localInfos as any)?.blueTeam.pick.length < 5) {
+            emptypicks = Array(5 - (localInfos as any)?.blueTeam.pick.length)
+                .fill(null)
                 .map((_, index) => (
                     <div
-                        key={index + (localInfos?.blueTeam.pick.length ?? 0)}
+                        key={
+                            index +
+                            ((localInfos as any)?.blueTeam.pick.length ?? 0)
+                        }
                         className={
                             index === 0 &&
-                            localInfos.next &&
-                            localInfos.next.is === 'bluePick' &&
-                            localInfos.next.index ===
-                                localInfos?.blueTeam.pick.length
+                            (localInfos as any).next &&
+                            (localInfos as any).next.is === 'bluePick' &&
+                            (localInfos as any).next.index ===
+                                (localInfos as any)?.blueTeam.pick.length
                                 ? 'nextChamp w-[200px] h-[100px] bg-white bannerChamp'
                                 : 'w-[200px] h-[100px] bg-white bannerChamp'
                         }></div>
@@ -392,7 +395,7 @@ if (currentPick === 4) {
 
     const renderBlueTeamBans = () => {
         // Utilisez Array.map pour générer les éléments div pour chaque ban
-        const blueBans = localInfos?.blueTeam.ban.map((ban, index) => (
+        const blueBans = (localInfos as any)?.blueTeam.ban.map((ban: any, index: number) => (
             <div
                 key={index}
                 className="w-[100px] h-[100px] bg-white"
@@ -402,18 +405,21 @@ if (currentPick === 4) {
         ));
 
         let emptyBans = null;
-        if (localInfos?.blueTeam.ban.length < 5) {
-            emptyBans = Array(5 - localInfos?.blueTeam.ban.length)
-                .fill()
+        if ((localInfos as any)?.blueTeam.ban.length < 5) {
+            emptyBans = Array(5 - (localInfos as any)?.blueTeam.ban.length)
+                .fill(null)
                 .map((_, index) => (
                     <div
-                        key={index + (localInfos?.blueTeam.ban.length ?? 0)}
+                        key={
+                            index +
+                            ((localInfos as any)?.blueTeam.ban.length ?? 0)
+                        }
                         className={
                             index === 0 &&
-                            localInfos.next &&
-                            localInfos.next.is === 'blueBan' &&
-                            localInfos.next.index ===
-                                localInfos?.blueTeam.ban.length
+                            (localInfos as any).next &&
+                            (localInfos as any).next.is === 'blueBan' &&
+                            (localInfos as any).next.index ===
+                                (localInfos as any)?.blueTeam.ban.length
                                 ? 'nextChamp w-[100px] h-[100px] bg-white'
                                 : 'w-[100px] h-[100px] bg-white'
                         }></div>
@@ -427,7 +433,7 @@ if (currentPick === 4) {
     const renderRedTeamBans = () => {
         console.log(localInfos);
         // Utilisez Array.map pour générer les éléments div pour chaque ban
-        const redBans = localInfos?.redTeam.ban.map((ban, index) => (
+        const redBans = (localInfos as any)?.redTeam.ban.map((ban: any, index: number) => (
             <div
                 key={index}
                 className="w-[100px] h-[100px] bg-white"
@@ -437,34 +443,37 @@ if (currentPick === 4) {
         ));
 
         let emptyBans = null;
-        if (localInfos?.redTeam.ban.length < 5) {
-            emptyBans = Array(5 - localInfos?.redTeam.ban.length)
-                .fill()
+        if ((localInfos as any)?.redTeam.ban.length < 5) {
+            emptyBans = Array(5 - (localInfos as any)?.redTeam.ban.length)
+                .fill(null)
                 .map((_, index) => (
                     <div
-                        key={index + (localInfos?.redTeam.ban.length ?? 0)}
+                        key={
+                            index +
+                            ((localInfos as any)?.redTeam.ban.length ?? 0)
+                        }
                         className={
                             index === 0 &&
-                            localInfos.next &&
-                            localInfos.next.is === 'redBan' &&
-                            localInfos.next.index ===
-                                localInfos?.redTeam.ban.length
+                            (localInfos as any).next &&
+                            (localInfos as any).next.is === 'redBan' &&
+                            (localInfos as any).next.index ===
+                                (localInfos as any)?.redTeam.ban.length
                                 ? 'nextChamp w-[100px] h-[100px] bg-white'
                                 : 'w-[100px] h-[100px] bg-white'
                         }></div>
                 ));
         }
 
-        socket.on('needLobbyInfos', (userId) => {
+        socket.on('needLobbyInfos', (userId: string) => {
             socket.emit('sendLobbyInfos', userId, localInfos);
         });
 
-        socket.on('updateInfos', (data) => {
+        socket.on('updateInfos', (data : any) => {
             setLocalInfos(data);
         });
 
         useEffect(() => {
-            if (!lobbyInfos.id) {
+            if (!(lobbyInfos as any).id) {
                 socket.emit('join_existingLobby', params.id);
             }
             return () => {};
@@ -481,20 +490,20 @@ if (currentPick === 4) {
     };
 
     const isReady = () => {
-        let actualValue = { ...localInfos };
+        let actualValue = { ...(localInfos as any) };
         if (isRed) {
-            actualValue.redTeam.ready = true;
+            (actualValue as any).redTeam.ready = true;
         } else {
-            actualValue.blueTeam.ready = true;
+            (actualValue as any).blueTeam.ready = true;
         }
-        socket.emit('updateReady', actualValue, params.id);
+        socket.emit('updateReady', actualValue as any, params.id);
     };
 
     const handleRestart = () => {
         setIsVisible(true);
     };
 
-    const handleChampionClick = (champion) => {
+    const handleChampionClick = (champion: any) => {
         chooseChamp(champion);
     };
 
@@ -503,14 +512,14 @@ if (currentPick === 4) {
         <div style={{ height: '100vh' }}>
             <div className="h-[17%] flex flex-row justify-between items-center">
                 <div>
-                    <h2>{localInfos.blueTeam.name}</h2>
+                    <h2>{(localInfos as any).blueTeam.name}</h2>
                 </div>
-                {(!localInfos.blueTeam.ready || !localInfos.redTeam.ready) && (
+                {(!(localInfos as any).blueTeam.ready || !(localInfos as any).redTeam.ready) && (
                     <div className="chrono">
-                        {localInfos.redTeam.ready && !localInfos.blueTeam.ready
+                        {(localInfos as any).redTeam.ready && !(localInfos as any).blueTeam.ready
                             ? 1
-                            : !localInfos.redTeam.ready &&
-                                localInfos.blueTeam.ready
+                            : !(localInfos as any).redTeam.ready &&
+                                (localInfos as any).blueTeam.ready
                               ? 1
                               : 0}
                         /2
@@ -520,7 +529,7 @@ if (currentPick === 4) {
                     <Timer newId={cpt} onFinish={() => handleFinish()} />
                 )}
                 <div>
-                    <h2>{localInfos.redTeam.name}</h2>
+                    <h2>{(localInfos as any).redTeam.name}</h2>
                 </div>
             </div>
             <div className="flex flex-row justify-between h-[65%]">
@@ -552,8 +561,10 @@ if (currentPick === 4) {
                             <button
                                 onClick={() => isReady()}
                                 className={
-                                    (isRed && !localInfos.redTeam.ready) ||
-                                    (isBlue && !localInfos.blueTeam.ready)
+                                    (isRed &&
+                                        !(localInfos as any).redTeam.ready) ||
+                                    (isBlue &&
+                                        !(localInfos as any).blueTeam.ready)
                                         ? 'glow-on-hover'
                                         : ''
                                 }

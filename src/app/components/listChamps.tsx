@@ -15986,12 +15986,24 @@ const champDatas = [
         bannerUrl: '/banners/711/711000.jpg',
     },
 ];
-const ListChamps = ({ onChampionClick, infos, cliquable }) => {
-    const [isHovered, setIsHovered] = useState(false);
-const [searchTerm, setSearchTerm] = useState('');
-const [selectedRole, setSelectedRole] = useState('');
+interface Champion {
+    id: number;
+    name: string;
+    // Ajoutez d'autres propriétés si nécessaire
+}
 
-    const handleMouseEnter = (champ) => {
+interface Props {
+    onChampionClick: (champion: Champion) => void;
+    infos: any;
+    cliquable: boolean;
+}
+
+const ListChamps: React.FC<Props> = ({ onChampionClick, infos, cliquable }) => {
+    const [isHovered, setIsHovered] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [selectedRole, setSelectedRole] = useState<string>('');
+
+    const handleMouseEnter = (champ: Champion) => {
         const champCard = document.getElementById(`champCard_${champ.id}`);
         if (champCard) {
             const champCardRect = champCard.getBoundingClientRect();
@@ -16004,49 +16016,53 @@ const [selectedRole, setSelectedRole] = useState('');
         setIsHovered(champ.name);
     };
 
-  const handleRoleSelect = (role) => {
-if (role !== selectedRole) {
-    setSelectedRole(role); // Mettre à jour l'état du rôle sélectionné
-} else {
-setSelectedRole('');
-}
-  };
+    const handleRoleSelect = (role: string) => {
+        if (role !== selectedRole) {
+            setSelectedRole(role); // Mettre à jour l'état du rôle sélectionné
+        } else {
+            setSelectedRole('');
+        }
+    };
 
     const handleMouseLeave = () => {
         setIsHovered(null);
     };
 
-    const handleChampionClick = (champion) => {
+    const handleChampionClick = (champion: Champion) => {
         if (!infos.disabled?.includes(champion.id)) {
             onChampionClick(champion);
         }
     };
 
-  const filteredChampions = champDatas
-      .filter((champion) => {
-          // Filtrer les champions en fonction du rôle sélectionné
-          if (selectedRole === '') {
-              return true; // Si aucun rôle sélectionné, afficher tous les champions
-          } else {
-              const dataOfChamp = allInfos.find((inf) => inf.id == champion.id);
-			
-				if (dataOfChamp) {
-					const have = dataOfChamp.positions.find((pos) => pos.name === selectedRole);
-					if (have) {
-						return true;
-					} else {
-						return false
-					}
-				} else {
-					return false
-				}
+    const filteredChampions = champDatas
+        .filter((champion) => {
+            // Filtrer les champions en fonction du rôle sélectionné
+            if (selectedRole === '') {
+                return true; // Si aucun rôle sélectionné, afficher tous les champions
+            } else {
+                const dataOfChamp = allInfos.find(
+                    (inf) => inf.id == champion.id
+                );
 
-              // return have
-          }
-      })
-      .filter((champion) =>
-          champion.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+                if (dataOfChamp) {
+                    const have = dataOfChamp.positions.find(
+                        (pos) => pos.name === selectedRole
+                    );
+                    if (have) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+
+                // return have
+            }
+        })
+        .filter((champion) =>
+            champion.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
     return (
         <>
             <div className="flex flex-row justify-between items-center w-full">
@@ -16115,8 +16131,7 @@ setSelectedRole('');
                 />
             </div>
             <div className="relative h-[93%] w-full mt-4">
-                <div
-                    className="flex flex-row flex-wrap gap-5 h-full overflow-auto items-start content-start justify-center">
+                <div className="flex flex-row flex-wrap gap-5 h-full overflow-auto items-start content-start justify-center">
                     {filteredChampions.map((champion) => {
                         const isDisabled = infos.disabled?.includes(
                             champion.id
@@ -16141,7 +16156,6 @@ setSelectedRole('');
                                     <img
                                         width={100}
                                         height={100}
-                                        alt="test"
                                         style={{
                                             filter: 'none',
                                             objectFit: 'cover',

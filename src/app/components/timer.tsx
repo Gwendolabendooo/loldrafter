@@ -8,7 +8,7 @@ interface TimerProps {
 }
 
 const Timer: React.FC<TimerProps> = ({ onFinish, newId }) => {
-    const [seconds, setSeconds] = useState<number>(10);
+    const [seconds, setSeconds] = useState<number>(30);
 
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
@@ -27,7 +27,7 @@ const Timer: React.FC<TimerProps> = ({ onFinish, newId }) => {
     }, [onFinish]);
 
     useEffect(() => {
-        setSeconds(10); // Réinitialiser les secondes
+        setSeconds(30); // Réinitialiser les secondes
     }, [newId]);
 
     return (
