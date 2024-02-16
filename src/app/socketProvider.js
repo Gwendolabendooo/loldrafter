@@ -6,7 +6,7 @@ import React, { createContext, useState } from "react";
 export const socket = socketio.connect(
     process.env.SOCKET_URL
         ? process.env.SOCKET_URL
-        : 'https://socket-lol-draft-80eda8c26e85.herokuapp.com',
+        : 'https://loldrafter-5f9408399e62.herokuapp.com',
     {
         withCredentials: false,
         transportOptions: {
